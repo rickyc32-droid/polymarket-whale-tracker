@@ -38,7 +38,7 @@ async function upstreamSelfTest(){
   const tests=[
     ['leaderboard-v2','https://data-api.polymarket.com/v2/leaderboard?category=sports&time_period=week&sort_by=PNL&limit=3'],
     ['leaderboard-v1','https://data-api.polymarket.com/v1/leaderboard?category=SPORTS&timePeriod=WEEK&orderBy=PNL&limit=3&offset=0'],
-    ['gamma-nfl','https://gamma-api.polymarket.com/events?active=true&closed=false&tag_slug=nfl&limit=3']
+    ['gamma-sports','https://gamma-api.polymarket.com/sports'],['positions-sample','https://data-api.polymarket.com/v2/positions?user=0xf0318c32136c2db7fec88b84869aee6a1106c80c&status=OPEN&limit=5'],['positions-v1-sample','https://data-api.polymarket.com/positions?user=0xf0318c32136c2db7fec88b84869aee6a1106c80c&sizeThreshold=0.1&limit=5']
   ];
   for(const [name,url] of tests){
     try{const r=await fetch(url,{headers:{accept:'application/json','user-agent':'WhaleSignalSportsLab/1.0'}});const body=await r.text();console.log('SELFTEST',name,r.status,body.slice(0,180).replace(/\n/g,' '))}
