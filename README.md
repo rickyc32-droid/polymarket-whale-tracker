@@ -1,2 +1,1 @@
 # polymarket-whale-tracker
-.gitignore
