@@ -41,8 +41,23 @@ async function upstreamSelfTest(){
     ['gamma-sports','https://gamma-api.polymarket.com/sports'],['positions-sample','https://data-api.polymarket.com/v2/positions?user=0xf0318c32136c2db7fec88b84869aee6a1106c80c&status=OPEN&limit=5'],['positions-v1-sample','https://data-api.polymarket.com/positions?user=0xf0318c32136c2db7fec88b84869aee6a1106c80c&sizeThreshold=0.1&limit=5']
   ];
   for(const [name,url] of tests){
-    try{const r=await fetch(url,{headers:{accept:'application/json','user-agent':'WhaleSignalSportsLab/1.0'}});const body=await r.text();console.log('SELFTEST',name,r.status,body.slice(0,180).replace(/\n/g,' '))}
-    catch(e){console.log('SELFTEST',name,'ERROR',e.message)}
+    try{
+      const r=await fetch(url,{headers:{accept:'application/json','user-agent':'WhaleSignalSportsLab/1.0'}});
+      const body=await r.text();
+      let detail=body.slice(0,180).replace(/\n/g,' ');
+      try{
+        const parsed=JSON.parse(body);
+        if(name==='gamma-sports'){
+          const row=(Array.isArray(parsed)?parsed:parsed.data||[]).find(x=>String(x.sport||x.name||'').toLowerCase()==='nfl');
+          detail='NFL_RECORD '+JSON.stringify(row||null);
+        }
+        if(name==='positions-sample'){
+          const row=(Array.isArray(parsed)?parsed:(parsed.data||[]))[0]||{};
+          detail='POSITION_FIELDS '+JSON.stringify({condition_id:row.condition_id,token_id:row.token_id,outcome:row.outcome,title:row.title,current_size:row.current_size,avg_price:row.avg_price,current_price:row.current_price,entry_cost_usdc:row.entry_cost_usdc,current_value:row.current_value});
+        }
+      }catch{}
+      console.log('SELFTEST',name,r.status,detail)
+    }catch(e){console.log('SELFTEST',name,'ERROR',e.message)}
   }
 }
 server.listen(PORT,'0.0.0.0',()=>{console.log('WhaleSignal listening on',PORT);upstreamSelfTest()});
