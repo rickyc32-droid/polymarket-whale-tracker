@@ -194,4 +194,4 @@ async function upstreamSelfTest(){
     }catch(e){console.log('SELFTEST',name,'ERROR',e.message)}
   }
 }
-server.listen(PORT,'0.0.0.0',()=>{console.log('WhaleSignal listening on',PORT);upstreamSelfTest()});
+server.listen(PORT,'0.0.0.0',()=>{console.log('WhaleSignal listening on',PORT);upstreamSelfTest();const t=Date.now();buildDashboard('nfl','week').then(d=>console.log('DASHBOARD_SELFTEST ok ms='+String(Date.now()-t)+' traders='+d.traders.length+' active='+d.meta.active+' signals='+d.signals.length+' priced='+d.signals.filter(x=>x.copy!=null).length)).catch(e=>console.log('DASHBOARD_SELFTEST error',e.message))});
