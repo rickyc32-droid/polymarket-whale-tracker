@@ -12,7 +12,7 @@ async function proxy(req,res,prefix,base){
   const now=Date.now(), hit=cache.get(url);
   if(hit && now-hit.at<15000){res.writeHead(hit.status,{'content-type':'application/json','cache-control':'public,max-age=10'});return res.end(hit.body)}
   try{
-    const r=await fetch(url,{headers:{accept:'application/json','user-agent':'WhaleSignalSportsLab/1.0'}});
+    const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),9000); const r=await fetch(url,{headers:{accept:'application/json','user-agent':'WhaleSignalSportsLab/1.0'},signal:ac.signal}); clearTimeout(tm);
     const body=await r.text();
     if(r.ok)cache.set(url,{at:now,status:r.status,body});
     res.writeHead(r.status,{'content-type':r.headers.get('content-type')||'application/json','cache-control':'no-store'});
