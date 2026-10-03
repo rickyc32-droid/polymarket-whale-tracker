@@ -21,9 +21,10 @@ async function proxy(req,res,prefix,base){
 }
 const server=http.createServer(async(req,res)=>{
   const u=req.url||'/';
-  for(const [prefix,base] of Object.entries(roots))if(u.startsWith(prefix))return proxy(req,res,prefix,base);
-  if(u==='/health'){res.writeHead(200,{'content-type':'application/json'});return res.end(JSON.stringify({ok:true,time:new Date().toISOString()}))}
-  const file=u==='/'?'/index.html':u.split('?')[0];
+  const pathname=new URL(u,'http://localhost').pathname;
+  for(const [prefix,base] of Object.entries(roots))if(pathname.startsWith(prefix))return proxy(req,res,prefix,base);
+  if(pathname==='/health'){res.writeHead(200,{'content-type':'application/json'});return res.end(JSON.stringify({ok:true,time:new Date().toISOString()}))}
+  const file=pathname==='/'?'/index.html':pathname;
   const safe=path.normalize(file).replace(/^(\.\.[/\\])+/, '');
   const fp=path.join(__dirname,safe);
   if(!fp.startsWith(__dirname)){res.writeHead(403);return res.end('Forbidden')}
